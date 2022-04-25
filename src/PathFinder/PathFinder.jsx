@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Node from "../Utility/Type/node";
 import NodeComponent from "./Node/Node";
 import { dijkstra, getNodesInShortestPath } from "../Utility/Algorithm";
+import { Switch } from "../Components";
 import "./PathFinder.css";
 
 const DEFAULT_START_NODE_ROW = 10;
@@ -13,6 +14,7 @@ const DEFAULT_COL = 50;
 
 const PathFinder = () => {
   const [grid, setGrid] = useState([]);
+  const [wallToggle, setWallToggle] = useState(false);
 
   useEffect(() => {
     setGrid(createNewGrid());
@@ -35,6 +37,15 @@ const PathFinder = () => {
       newGrid.push(newRow);
     }
     return newGrid;
+  };
+
+  const setWall = (node) => {
+    if (wallToggle) {
+      const newNode = node.clone({ isWall: !node.isWall });
+      grid[node.row][node.col] = newNode;
+      const newGrid = grid.map((row) => row.slice());
+      setGrid(newGrid);
+    }
   };
 
   const animateDijkstra = (visitedNodes, nodesInShortestPath) => {
@@ -84,12 +95,19 @@ const PathFinder = () => {
         >
           Clear
         </button>
+        <span>Click to set wall</span>
+        <Switch onChange={(e) => setWallToggle(e.target.checked)} />
       </div>
       <div className="grid">
         {grid.map((row, rowInx) => (
           <div key={Math.random()} id={rowInx} className="row">
             {row.map((node) => (
-              <NodeComponent key={Math.random()} node={node} />
+              <NodeComponent
+                key={Math.random()}
+                node={node}
+                clickable={wallToggle}
+                onClick={() => setWall(node)}
+              />
             ))}
           </div>
         ))}

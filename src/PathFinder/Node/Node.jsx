@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import "./Node.css";
 
 const Node = (props) => {
-  const { node } = props;
+  const { node, clickable, onClick } = props;
   const ref = useRef(null);
   node.ref = ref;
 
@@ -14,7 +14,12 @@ const Node = (props) => {
   };
 
   return (
-    <div id={`${node.row}-${node.col}`} ref={ref} className={getNodeClass()} />
+    <div
+      id={`${node.row}-${node.col}`}
+      ref={ref}
+      onClick={onClick}
+      className={`${getNodeClass()} ${clickable ? "node-blur" : ""}`}
+    />
   );
 };
 

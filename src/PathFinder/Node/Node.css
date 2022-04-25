@@ -17,6 +17,11 @@
   background-color: gray;
 }
 
+.node-blur:hover{
+  cursor: pointer;
+  opacity: 0.4;
+}
+
 .node-visited {
   animation-name: visitedAnimation;
   animation-duration: 1.5s;
