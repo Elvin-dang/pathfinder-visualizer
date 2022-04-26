@@ -1,10 +1,110 @@
 .menu {
   padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .menu button {
   cursor: pointer;
   margin: 0 10px;
+}
+
+/* CSS */
+#visualize-btn {
+  appearance: none;
+  background-color: #2ea44f;
+  border: 1px solid rgba(27, 31, 35, .15);
+  border-radius: 6px;
+  box-shadow: rgba(27, 31, 35, .1) 0 1px 0;
+  box-sizing: border-box;
+  color: #fff;
+  cursor: pointer;
+  display: inline-block;
+  font-family: -apple-system,system-ui,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 20px;
+  padding: 6px 16px;
+  position: relative;
+  text-align: center;
+  text-decoration: none;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+#visualize-btn:focus:not(:focus-visible):not(.focus-visible) {
+  box-shadow: none;
+  outline: none;
+}
+
+#visualize-btn:hover {
+  background-color: #2c974b;
+}
+
+#visualize-btn:focus {
+  box-shadow: rgba(46, 164, 79, .4) 0 0 0 3px;
+  outline: none;
+}
+
+#visualize-btn:disabled {
+  background-color: #94d3a2;
+  border-color: rgba(27, 31, 35, .1);
+  color: rgba(255, 255, 255, .8);
+  cursor: default;
+}
+
+#visualize-btn:active {
+  background-color: #298e46;
+  box-shadow: rgba(20, 70, 32, .2) 0 1px 0 inset;
+}
+
+#clear-btn {
+  align-items: center;
+  background-color: #FFFFFF;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: .25rem;
+  box-shadow: rgba(0, 0, 0, 0.02) 0 1px 3px 0;
+  box-sizing: border-box;
+  color: rgba(0, 0, 0, 0.85);
+  cursor: pointer;
+  display: inline-flex;
+  font-family: system-ui,-apple-system,system-ui,"Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  justify-content: center;
+  line-height: 20px;
+  padding: 6px 16px;
+  position: relative;
+  text-decoration: none;
+  transition: all 250ms;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  vertical-align: baseline;
+  width: auto;
+}
+
+#clear-btn:hover,
+#clear-btn:focus {
+  border-color: rgba(0, 0, 0, 0.15);
+  box-shadow: rgba(0, 0, 0, 0.1) 0 4px 12px;
+  color: rgba(0, 0, 0, 0.65);
+}
+
+#clear-btn:hover {
+  transform: translateY(-1px);
+}
+
+#clear-btn:active {
+  background-color: #F0F0F1;
+  border-color: rgba(0, 0, 0, 0.15);
+  box-shadow: rgba(0, 0, 0, 0.06) 0 2px 4px;
+  color: rgba(0, 0, 0, 0.65);
+  transform: translateY(0);
 }
 
 .grid {
@@ -14,4 +114,65 @@
 
 .row {
   display: flex;
+}
+
+.modifier {
+  border: 2px solid rgb(140, 140, 140);
+  border-radius: 10px;
+  padding-top: 20px;
+  position: relative;
+  margin: 0 10px;
+}
+
+.modifier-title {
+  position: absolute;
+  top: -15px;
+  left: 32px;
+  border: 2px solid rgb(140, 140, 140);
+  border-radius: 5px;
+  color: rgb(140, 140, 140);
+  background-color: white;
+  padding: 5px 10px;
+}
+
+.switch-item-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+}
+
+.node-name {
+  display: inline-block;
+  text-align: start;
+  min-width: 90px;
+  font-weight: bold;
+}
+
+.node-icon {
+  display: inline-block;
+  height: 16px;
+  width: 16px;
+  border: 2px solid rgb(112, 112, 112);
+  margin-right: 8px;
+  position: relative;
+}
+
+.node-icon::after {
+  content: ":";
+  position: absolute;
+  right: -8px;
+  top: -2px;
+}
+
+#wall-node {
+  background-color: gray;
+}
+
+#start-node {
+  background-color: cornflowerblue;
+}
+
+#finish-node {
+  background-color: darkgreen;
 }

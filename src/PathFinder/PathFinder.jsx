@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import Node from "../Utility/Type/node";
+import React, { useEffect, useRef, useState } from "react";
+import Node from "../Utility/Class/node";
 import NodeComponent from "./Node/Node";
 import { dijkstra, getNodesInShortestPath } from "../Utility/Algorithm";
 import { Switch } from "../Components";
@@ -15,12 +15,18 @@ const DEFAULT_COL = 50;
 const PathFinder = () => {
   const [grid, setGrid] = useState([]);
   const [wallToggle, setWallToggle] = useState(false);
+  const [startNodeToggle, setStartNodeToggle] = useState(false);
+  const [finishNodeToggle, setFinishNodeToggle] = useState(false);
+
+  const wallRef = useRef(null);
+  const startNodeRef = useRef(null);
+  const finishNodeRef = useRef(null);
 
   useEffect(() => {
-    setGrid(createNewGrid());
+    setGrid(createDefaultNewGrid());
   }, []);
 
-  const createNewGrid = () => {
+  const createDefaultNewGrid = () => {
     const newGrid = [];
     for (let i = 0; i < DEFAULT_ROW; i++) {
       const newRow = [];
@@ -39,16 +45,109 @@ const PathFinder = () => {
     return newGrid;
   };
 
+  const createNewGrid = () => {
+    let { startNode, finishNode } = getStartAndFinishNode();
+    const newGrid = [];
+    for (let i = 0; i < DEFAULT_ROW; i++) {
+      const newRow = [];
+      for (let j = 0; j < DEFAULT_COL; j++) {
+        newRow.push(
+          new Node(
+            i,
+            j,
+            i === startNode.row && j === startNode.col,
+            i === finishNode.row && j === finishNode.col,
+          ),
+        );
+      }
+      newGrid.push(newRow);
+    }
+    return newGrid;
+  };
+
   const setWall = (node) => {
-    if (wallToggle) {
-      const newNode = node.clone({ isWall: !node.isWall });
-      grid[node.row][node.col] = newNode;
+    if (!node.isStartNode && !node.isFinishNode) {
+      const newWallNode = node.clone({ isWall: !node.isWall });
+      grid[node.row][node.col] = newWallNode;
       const newGrid = grid.map((row) => row.slice());
       setGrid(newGrid);
     }
   };
 
+  const setStartNode = (node) => {
+    if (!node.isStartNode) {
+      grid.forEach((row) => {
+        const oldStartNode = row.find((node) => node.isStartNode);
+        if (oldStartNode) oldStartNode.isStartNode = false;
+      });
+      const newStartNode = node.clone({ isStartNode: true, isWall: false });
+      grid[node.row][node.col] = newStartNode;
+      const newGrid = grid.map((row) => row.slice());
+      setGrid(newGrid);
+    }
+  };
+
+  const setFinishNode = (node) => {
+    if (!node.isFinishNode) {
+      grid.forEach((row) => {
+        const oldFinishNode = row.find((node) => node.isFinishNode);
+        if (oldFinishNode) oldFinishNode.isFinishNode = false;
+      });
+      const newFinishNode = node.clone({ isFinishNode: true, isWall: false });
+      grid[node.row][node.col] = newFinishNode;
+      const newGrid = grid.map((row) => row.slice());
+      setGrid(newGrid);
+    }
+  };
+
+  const handleClickNode = (node) => {
+    if (startNodeToggle) setStartNode(node);
+    else if (finishNodeToggle) setFinishNode(node);
+    else if (wallToggle) setWall(node);
+    else return;
+  };
+
+  const toggle = (field, value) => {
+    setWallToggle(false);
+    setStartNodeToggle(false);
+    setFinishNodeToggle(false);
+    switch (field) {
+      case "wall":
+        setWallToggle(value);
+        break;
+      case "start":
+        setStartNodeToggle(value);
+        break;
+      case "finish":
+        setFinishNodeToggle(value);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const disableSwitch = (value) => {
+    wallRef.current.disabled = value;
+    startNodeRef.current.disabled = value;
+    finishNodeRef.current.disabled = value;
+  };
+
+  const getStartAndFinishNode = () => {
+    let startNode, finishNode;
+    for (const row of grid) {
+      startNode = row.find((node) => node.isStartNode);
+      if (startNode) break;
+    }
+    for (const row of grid) {
+      finishNode = row.find((node) => node.isFinishNode);
+      if (finishNode) break;
+    }
+    return { startNode, finishNode };
+  };
+
   const animateDijkstra = (visitedNodes, nodesInShortestPath) => {
+    toggle("none");
+    disableSwitch(true);
     for (let i = 0; i <= visitedNodes.length; i++) {
       if (i === visitedNodes.length) {
         setTimeout(() => {
@@ -56,47 +155,81 @@ const PathFinder = () => {
         }, 10 * i);
         return;
       }
-      setTimeout(() => {
-        const node = visitedNodes[i];
-        node.ref.current.className = "node node-visited";
-      }, 10 * i);
+      if (!visitedNodes[i].isStartNode && !visitedNodes[i].isFinishNode)
+        setTimeout(() => {
+          const node = visitedNodes[i];
+          node.ref.current.className = "node node-visited";
+        }, 10 * i);
+      else setTimeout(() => {}, 10 * i);
     }
   };
 
   const animateShortestPath = (nodesInShortestPath) => {
     for (let i = 0; i < nodesInShortestPath.length; i++) {
-      setTimeout(() => {
-        const node = nodesInShortestPath[i];
-        node.ref.current.className = "node node-shortest-path";
-      }, 50 * i);
+      if (
+        !nodesInShortestPath[i].isStartNode &&
+        !nodesInShortestPath[i].isFinishNode
+      )
+        setTimeout(() => {
+          const node = nodesInShortestPath[i];
+          node.ref.current.className = "node node-shortest-path";
+        }, 50 * i);
+      if (nodesInShortestPath[i].isFinishNode)
+        setTimeout(() => disableSwitch(false), 50 * i);
     }
   };
 
   const visualize = () => {
-    const visitedNodes = dijkstra(
-      grid,
-      grid[DEFAULT_START_NODE_ROW][DEFAULT_START_NODE_COL],
-      grid[DEFAULT_FINISH_NODE_ROW][DEFAULT_FINISH_NODE_COL],
-    );
-    const nodesInShortestPath = getNodesInShortestPath(
-      grid[DEFAULT_FINISH_NODE_ROW][DEFAULT_FINISH_NODE_COL],
-    );
+    let { startNode, finishNode } = getStartAndFinishNode();
+    const visitedNodes = dijkstra(grid, startNode, finishNode);
+    const nodesInShortestPath = getNodesInShortestPath(finishNode);
     animateDijkstra(visitedNodes, nodesInShortestPath);
   };
 
   return (
     <div>
       <div className="menu">
-        <button onClick={() => visualize()}>Visualize</button>
+        <button onClick={() => visualize()} id="visualize-btn">
+          Visualize
+        </button>
         <button
           onClick={() => {
             setGrid(createNewGrid());
           }}
+          id="clear-btn"
         >
           Clear
         </button>
-        <span>Click to set wall</span>
-        <Switch onChange={(e) => setWallToggle(e.target.checked)} />
+        <div className="modifier">
+          <div className="modifier-title">Click to set</div>
+          <div class="switch-item-wrapper">
+            <span className="node-name">Wall node</span>
+            <div id="wall-node" className="node-icon"></div>
+            <Switch
+              onChange={(e) => toggle("wall", e.target.checked)}
+              checked={wallToggle}
+              propRef={wallRef}
+            />
+          </div>
+          <div class="switch-item-wrapper">
+            <span className="node-name">Start node</span>
+            <div id="start-node" className="node-icon"></div>
+            <Switch
+              onChange={(e) => toggle("start", e.target.checked)}
+              checked={startNodeToggle}
+              propRef={startNodeRef}
+            />
+          </div>
+          <div class="switch-item-wrapper">
+            <span className="node-name">Finish node</span>
+            <div id="finish-node" className="node-icon"></div>
+            <Switch
+              onChange={(e) => toggle("finish", e.target.checked)}
+              checked={finishNodeToggle}
+              propRef={finishNodeRef}
+            />
+          </div>
+        </div>
       </div>
       <div className="grid">
         {grid.map((row, rowInx) => (
@@ -105,8 +238,8 @@ const PathFinder = () => {
               <NodeComponent
                 key={Math.random()}
                 node={node}
-                clickable={wallToggle}
-                onClick={() => setWall(node)}
+                clickable={wallToggle || startNodeToggle || finishNodeToggle}
+                onClick={() => handleClickNode(node)}
               />
             ))}
           </div>

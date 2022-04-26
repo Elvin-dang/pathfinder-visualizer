@@ -49,6 +49,9 @@ function gridToArray(grid) {
   const array = [];
   for (const row of grid) {
     for (const node of row) {
+      node.distance = Infinity;
+      node.isVisited = false;
+      node.previousNode = null;
       array.push(node);
     }
   }
