@@ -7,31 +7,24 @@ export function dijkstra(grid, startNode, finishNode) {
     const closestNode = unVisitedNodes.shift();
     // Check wall
     if (closestNode.isWall) continue;
-    // Check if there no way to find the destiny node
+    // Check if there no way to find the destiny node (at least, the finish node has Infinity distance)
     if (closestNode.distance === Infinity) return visitedNodes;
     closestNode.isVisited = true;
     visitedNodes.push(closestNode);
-    // Compare address of 2 objects
+    // Compare "address" of 2 objects. It mean visited node has reached to the destination
     if (closestNode === finishNode) return visitedNodes;
     updateUnVisitedNeighbors(closestNode, grid);
   }
 }
 
-export function getNodesInShortestPath(finishNode) {
-  const nodes = [];
-  let currentNode = finishNode;
-  while (currentNode) {
-    nodes.unshift(currentNode);
-    currentNode = currentNode.previousNode;
-  }
-  return nodes;
-}
-
 function updateUnVisitedNeighbors(node, grid) {
   const neighbors = getUnVisitedNeighborsOfCurrentNode(node, grid);
   for (const neighbor of neighbors) {
-    neighbor.distance = node.distance + 1;
-    neighbor.previousNode = node;
+    const alt = node.distance + 1; // 1 is the edges value between node & its neighbor
+    if (alt < neighbor.distance) {
+      neighbor.distance = alt;
+      neighbor.previousNode = node;
+    }
   }
 }
 

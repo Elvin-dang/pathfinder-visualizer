@@ -1,3 +1,4 @@
-import Switch from "./switch";
+import Switch from "./Switch";
+import Dropdown from "./Dropdown";
 
-export { Switch };
+export { Switch, Dropdown };

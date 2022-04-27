@@ -10,12 +10,22 @@
   margin: 0 10px;
 }
 
+.menu .combo-btn {
+  display: flex;
+  justify-content: center;
+}
+
+.menu .combo-btn button:first-child {
+  margin-left: 1px;
+  border-radius: 0 6px 6px 0;
+}
+
 /* CSS */
 #visualize-btn {
   appearance: none;
   background-color: #2ea44f;
   border: 1px solid rgba(27, 31, 35, .15);
-  border-radius: 6px;
+  border-radius: 6px 0 0 6px;
   box-shadow: rgba(27, 31, 35, .1) 0 1px 0;
   box-sizing: border-box;
   color: #fff;
@@ -34,6 +44,7 @@
   touch-action: manipulation;
   vertical-align: middle;
   white-space: nowrap;
+  margin-right: 1px;
 }
 
 #visualize-btn:focus:not(:focus-visible):not(.focus-visible) {
@@ -51,10 +62,10 @@
 }
 
 #visualize-btn:disabled {
-  background-color: #94d3a2;
+  background-color: #bf4c44;
   border-color: rgba(27, 31, 35, .1);
   color: rgba(255, 255, 255, .8);
-  cursor: default;
+  cursor: not-allowed;
 }
 
 #visualize-btn:active {
@@ -95,6 +106,19 @@
   color: rgba(0, 0, 0, 0.65);
 }
 
+#clear-btn:disabled {
+  background-color: #d3d3d3;
+  border-color: rgba(27, 31, 35, .1);
+  color: rgba(255, 255, 255, .8);
+  cursor: default;
+}
+
+#clear-btn:disabled:hover {
+  transform: none;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
 #clear-btn:hover {
   transform: translateY(-1px);
 }
@@ -108,7 +132,7 @@
 }
 
 .grid {
-  margin: 0 0;
+  margin: 0 10px 10px;
   border: 1px solid rgb(112, 112, 112);
 }
 

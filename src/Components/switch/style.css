@@ -52,6 +52,10 @@ input:checked + .slider:before {
   transform: translateX(20px);
 }
 
+input:disabled + .slider {
+  cursor: not-allowed;
+}
+
 /* Rounded sliders */
 .slider.round {
   border-radius: 34px;

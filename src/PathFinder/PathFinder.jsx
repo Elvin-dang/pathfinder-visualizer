@@ -1,14 +1,19 @@
 import React, { useEffect, useRef, useState } from "react";
 import Node from "../Utility/Class/node";
 import NodeComponent from "./Node/Node";
-import { dijkstra, getNodesInShortestPath } from "../Utility/Algorithm";
-import { Switch } from "../Components";
+import {
+  dijkstra,
+  bfs,
+  dfs,
+  getNodesInShortestPath,
+} from "../Utility/Algorithm";
+import { Dropdown, Switch } from "../Components";
 import "./PathFinder.css";
 
 const DEFAULT_START_NODE_ROW = 10;
 const DEFAULT_START_NODE_COL = 10;
-const DEFAULT_FINISH_NODE_ROW = 12;
-const DEFAULT_FINISH_NODE_COL = 20;
+const DEFAULT_FINISH_NODE_ROW = 10;
+const DEFAULT_FINISH_NODE_COL = 40;
 const DEFAULT_ROW = 20;
 const DEFAULT_COL = 50;
 
@@ -17,10 +22,14 @@ const PathFinder = () => {
   const [wallToggle, setWallToggle] = useState(false);
   const [startNodeToggle, setStartNodeToggle] = useState(false);
   const [finishNodeToggle, setFinishNodeToggle] = useState(false);
+  const [algorithm, setAlgorithm] = useState("Dijkstra");
 
   const wallRef = useRef(null);
   const startNodeRef = useRef(null);
   const finishNodeRef = useRef(null);
+  const visualizeBtnRef = useRef(null);
+  const dropdownBtnRef = useRef(null);
+  const clearBtnRef = useRef(null);
 
   useEffect(() => {
     setGrid(createDefaultNewGrid());
@@ -126,10 +135,13 @@ const PathFinder = () => {
     }
   };
 
-  const disableSwitch = (value) => {
+  const disable = (value) => {
     wallRef.current.disabled = value;
     startNodeRef.current.disabled = value;
     finishNodeRef.current.disabled = value;
+    visualizeBtnRef.current.disabled = value;
+    dropdownBtnRef.current.disabled = value;
+    clearBtnRef.current.disabled = value;
   };
 
   const getStartAndFinishNode = () => {
@@ -145,9 +157,9 @@ const PathFinder = () => {
     return { startNode, finishNode };
   };
 
-  const animateDijkstra = (visitedNodes, nodesInShortestPath) => {
+  const animateVisitedNodes = (visitedNodes, nodesInShortestPath) => {
     toggle("none");
-    disableSwitch(true);
+    disable(true);
     for (let i = 0; i <= visitedNodes.length; i++) {
       if (i === visitedNodes.length) {
         setTimeout(() => {
@@ -174,35 +186,66 @@ const PathFinder = () => {
           const node = nodesInShortestPath[i];
           node.ref.current.className = "node node-shortest-path";
         }, 50 * i);
-      if (nodesInShortestPath[i].isFinishNode)
-        setTimeout(() => disableSwitch(false), 50 * i);
+      if (nodesInShortestPath[i].isFinishNode) {
+        setTimeout(() => disable(false), 50 * i);
+      }
     }
   };
 
   const visualize = () => {
     let { startNode, finishNode } = getStartAndFinishNode();
-    const visitedNodes = dijkstra(grid, startNode, finishNode);
+    let visitedNodes;
+    switch (algorithm) {
+      case "Dijkstra":
+        visitedNodes = dijkstra(grid, startNode, finishNode);
+        break;
+      case "BFS":
+        visitedNodes = bfs(grid, startNode, finishNode);
+        break;
+      case "DFS":
+        visitedNodes = dfs(grid, startNode, finishNode);
+        break;
+      default:
+        break;
+    }
     const nodesInShortestPath = getNodesInShortestPath(finishNode);
-    animateDijkstra(visitedNodes, nodesInShortestPath);
+    animateVisitedNodes(visitedNodes, nodesInShortestPath);
   };
 
   return (
     <div>
       <div className="menu">
-        <button onClick={() => visualize()} id="visualize-btn">
-          Visualize
-        </button>
+        <div className="combo-btn">
+          <button
+            onClick={() => visualize()}
+            id="visualize-btn"
+            ref={visualizeBtnRef}
+          >
+            Visualize {algorithm}
+          </button>
+          <Dropdown
+            title={"▼"}
+            contents={[
+              { name: "Dijkstra", value: "Dijkstra" },
+              { name: "Breadth-first Search", value: "BFS" },
+              { name: "Depth-first Search", value: "DFS" },
+            ]}
+            onClick={(value) => setAlgorithm(value)}
+            propRef={dropdownBtnRef}
+          />
+        </div>
         <button
           onClick={() => {
             setGrid(createNewGrid());
           }}
           id="clear-btn"
+          ref={clearBtnRef}
         >
           Clear
         </button>
         <div className="modifier">
           <div className="modifier-title">Click to set</div>
-          <div class="switch-item-wrapper">
+          <div className="switch-item-wrapper">
             <span className="node-name">Wall node</span>
             <div id="wall-node" className="node-icon"></div>
             <Switch
@@ -211,7 +254,7 @@ const PathFinder = () => {
               propRef={wallRef}
             />
           </div>
-          <div class="switch-item-wrapper">
+          <div className="switch-item-wrapper">
             <span className="node-name">Start node</span>
             <div id="start-node" className="node-icon"></div>
             <Switch
@@ -220,7 +263,7 @@ const PathFinder = () => {
               propRef={startNodeRef}
             />
           </div>
-          <div class="switch-item-wrapper">
+          <div className="switch-item-wrapper">
             <span className="node-name">Finish node</span>
             <div id="finish-node" className="node-icon"></div>
             <Switch

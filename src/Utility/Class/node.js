@@ -8,7 +8,6 @@ class Node {
     this.distance = Infinity;
     this.previousNode = null;
     this.isVisited = false;
-    this.isShortestPath = false;
     this.ref = null;
   }
 
@@ -36,9 +35,6 @@ class Node {
     if (modifiedProps.isVisited !== undefined)
       cloneNode.isVisited = modifiedProps.isVisited;
     else cloneNode.isVisited = this.isVisited;
-    if (modifiedProps.isShortestPath !== undefined)
-      cloneNode.isShortestPath = modifiedProps.isShortestPath;
-    else cloneNode.isShortestPath = this.isShortestPath;
     if (modifiedProps.ref !== undefined) cloneNode.ref = modifiedProps.ref;
     else cloneNode.ref = this.ref;
     return cloneNode;
