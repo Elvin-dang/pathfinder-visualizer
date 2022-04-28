@@ -23,6 +23,7 @@ const PathFinder = () => {
   const [startNodeToggle, setStartNodeToggle] = useState(false);
   const [finishNodeToggle, setFinishNodeToggle] = useState(false);
   const [algorithm, setAlgorithm] = useState("Dijkstra");
+  const [speed, setSpeed] = useState(15);
 
   const wallRef = useRef(null);
   const startNodeRef = useRef(null);
@@ -30,6 +31,7 @@ const PathFinder = () => {
   const visualizeBtnRef = useRef(null);
   const dropdownBtnRef = useRef(null);
   const clearBtnRef = useRef(null);
+  const speedInputRef = useRef(null);
 
   useEffect(() => {
     setGrid(createDefaultNewGrid());
@@ -142,6 +144,7 @@ const PathFinder = () => {
     visualizeBtnRef.current.disabled = value;
     dropdownBtnRef.current.disabled = value;
     clearBtnRef.current.disabled = value;
+    speedInputRef.current.disabled = value;
   };
 
   const getStartAndFinishNode = () => {
@@ -164,15 +167,15 @@ const PathFinder = () => {
       if (i === visitedNodes.length) {
         setTimeout(() => {
           animateShortestPath(nodesInShortestPath);
-        }, 10 * i);
+        }, (25 - speed) * i);
         return;
       }
       if (!visitedNodes[i].isStartNode && !visitedNodes[i].isFinishNode)
         setTimeout(() => {
           const node = visitedNodes[i];
           node.ref.current.className = "node node-visited";
-        }, 10 * i);
-      else setTimeout(() => {}, 10 * i);
+        }, (25 - speed) * i);
+      else setTimeout(() => {}, (25 - speed) * i);
     }
   };
 
@@ -185,14 +188,15 @@ const PathFinder = () => {
         setTimeout(() => {
           const node = nodesInShortestPath[i];
           node.ref.current.className = "node node-shortest-path";
-        }, 50 * i);
+        }, 5 * (25 - speed) * i);
       if (nodesInShortestPath[i].isFinishNode) {
-        setTimeout(() => disable(false), 50 * i);
+        setTimeout(() => disable(false), 5 * (25 - speed) * i);
       }
     }
   };
 
   const visualize = () => {
+    setGrid(grid.map((row) => row.slice()));
     let { startNode, finishNode } = getStartAndFinishNode();
     let visitedNodes;
     switch (algorithm) {
@@ -272,6 +276,26 @@ const PathFinder = () => {
               propRef={finishNodeRef}
             />
           </div>
+        </div>
+        <div className="speed-wrapper">
+          <div className="speed-title">
+            Speed{" "}
+            <span className="speed-title-number">
+              x{(10 / (25 - speed)).toFixed(1)}
+            </span>
+          </div>
+          <input
+            className="speed-slider"
+            type="range"
+            min={5}
+            max={20}
+            value={speed}
+            step={1}
+            ref={speedInputRef}
+            onChange={(e) => {
+              setSpeed(e.target.value);
+            }}
+          />
         </div>
       </div>
       <div className="grid">

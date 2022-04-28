@@ -200,3 +200,13 @@
 #finish-node {
   background-color: darkgreen;
 }
+
+.speed-wrapper .speed-title .speed-title-number {
+  font-weight: bold;
+  display: inline-block;
+  min-width: 35px;
+}
+
+.speed-wrapper .speed-slider:disabled {
+  cursor: not-allowed;
+}
