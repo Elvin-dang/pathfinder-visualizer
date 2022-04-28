@@ -8,6 +8,8 @@ class Node {
     this.distance = Infinity;
     this.previousNode = null;
     this.isVisited = false;
+    this.g = Infinity;
+    this.f = Infinity;
     this.ref = null;
   }
 

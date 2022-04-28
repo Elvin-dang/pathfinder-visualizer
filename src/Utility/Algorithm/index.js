@@ -1,7 +1,7 @@
 import { dijkstra } from "./dijkstra";
 import { bfs } from "./bfs";
 import { dfs } from "./dfs";
-import { aStart } from "./aStart";
+import { aStar } from "./aStar";
 
 function getNodesInShortestPath(finishNode) {
   const nodes = [];
@@ -13,4 +13,4 @@ function getNodesInShortestPath(finishNode) {
   return nodes;
 }
 
-export { dijkstra, bfs, dfs, aStart, getNodesInShortestPath };
+export { dijkstra, bfs, dfs, aStar, getNodesInShortestPath };

@@ -5,6 +5,7 @@ import {
   dijkstra,
   bfs,
   dfs,
+  aStar,
   getNodesInShortestPath,
 } from "../Utility/Algorithm";
 import { Dropdown, Switch } from "../Components";
@@ -23,7 +24,7 @@ const PathFinder = () => {
   const [startNodeToggle, setStartNodeToggle] = useState(false);
   const [finishNodeToggle, setFinishNodeToggle] = useState(false);
   const [algorithm, setAlgorithm] = useState("Dijkstra");
-  const [speed, setSpeed] = useState(15);
+  const [speed, setSpeed] = useState(-10);
 
   const wallRef = useRef(null);
   const startNodeRef = useRef(null);
@@ -32,6 +33,8 @@ const PathFinder = () => {
   const dropdownBtnRef = useRef(null);
   const clearBtnRef = useRef(null);
   const speedInputRef = useRef(null);
+  const number = useRef(null);
+  const length = useRef(null);
 
   useEffect(() => {
     setGrid(createDefaultNewGrid());
@@ -86,7 +89,7 @@ const PathFinder = () => {
   };
 
   const setStartNode = (node) => {
-    if (!node.isStartNode) {
+    if (!node.isStartNode && !node.isFinishNode) {
       grid.forEach((row) => {
         const oldStartNode = row.find((node) => node.isStartNode);
         if (oldStartNode) oldStartNode.isStartNode = false;
@@ -99,7 +102,7 @@ const PathFinder = () => {
   };
 
   const setFinishNode = (node) => {
-    if (!node.isFinishNode) {
+    if (!node.isFinishNode && !node.isStartNode) {
       grid.forEach((row) => {
         const oldFinishNode = row.find((node) => node.isFinishNode);
         if (oldFinishNode) oldFinishNode.isFinishNode = false;
@@ -147,6 +150,11 @@ const PathFinder = () => {
     speedInputRef.current.disabled = value;
   };
 
+  const resetStatistic = () => {
+    number.current.innerHTML = 0;
+    length.current.innerHTML = 0;
+  };
+
   const getStartAndFinishNode = () => {
     let startNode, finishNode;
     for (const row of grid) {
@@ -167,15 +175,20 @@ const PathFinder = () => {
       if (i === visitedNodes.length) {
         setTimeout(() => {
           animateShortestPath(nodesInShortestPath);
-        }, (25 - speed) * i);
+        }, Math.abs(speed) * i);
         return;
       }
       if (!visitedNodes[i].isStartNode && !visitedNodes[i].isFinishNode)
         setTimeout(() => {
           const node = visitedNodes[i];
           node.ref.current.className = "node node-visited";
-        }, (25 - speed) * i);
-      else setTimeout(() => {}, (25 - speed) * i);
+          number.current.innerHTML = Number(number.current.innerHTML) + 1;
+        }, Math.abs(speed) * i);
+      else {
+        setTimeout(() => {
+          number.current.innerHTML = Number(number.current.innerHTML) + 1;
+        }, Math.abs(speed) * i);
+      }
     }
   };
 
@@ -188,15 +201,25 @@ const PathFinder = () => {
         setTimeout(() => {
           const node = nodesInShortestPath[i];
           node.ref.current.className = "node node-shortest-path";
-        }, 5 * (25 - speed) * i);
+          length.current.innerHTML = Number(length.current.innerHTML) + 1;
+        }, 5 * Math.abs(speed) * i);
       if (nodesInShortestPath[i].isFinishNode) {
-        setTimeout(() => disable(false), 5 * (25 - speed) * i);
+        setTimeout(() => {
+          length.current.innerHTML = Number(length.current.innerHTML) + 1;
+          disable(false);
+        }, 5 * Math.abs(speed) * i);
+      }
+      if (nodesInShortestPath[i].isStartNode) {
+        setTimeout(() => {
+          length.current.innerHTML = Number(length.current.innerHTML) + 1;
+        }, 5 * Math.abs(speed) * i);
       }
     }
   };
 
   const visualize = () => {
     setGrid(grid.map((row) => row.slice()));
+    resetStatistic();
     let { startNode, finishNode } = getStartAndFinishNode();
     let visitedNodes;
     switch (algorithm) {
@@ -208,6 +231,9 @@ const PathFinder = () => {
         break;
       case "DFS":
         visitedNodes = dfs(grid, startNode, finishNode);
+        break;
+      case "A*":
+        visitedNodes = aStar(grid, startNode, finishNode);
         break;
       default:
         break;
@@ -233,6 +259,7 @@ const PathFinder = () => {
               { name: "Dijkstra", value: "Dijkstra" },
               { name: "Breadth-first Search", value: "BFS" },
               { name: "Depth-first Search", value: "DFS" },
+              { name: "A Star", value: "A*" },
             ]}
             onClick={(value) => setAlgorithm(value)}
             propRef={dropdownBtnRef}
@@ -241,6 +268,7 @@ const PathFinder = () => {
         <button
           onClick={() => {
             setGrid(createNewGrid());
+            resetStatistic();
           }}
           id="clear-btn"
           ref={clearBtnRef}
@@ -277,25 +305,35 @@ const PathFinder = () => {
             />
           </div>
         </div>
-        <div className="speed-wrapper">
-          <div className="speed-title">
-            Speed{" "}
-            <span className="speed-title-number">
-              x{(10 / (25 - speed)).toFixed(1)}
-            </span>
+        <div className="speed-statistic-wrapper">
+          <div className="speed-wrapper">
+            <div className="speed-title">
+              Speed{" "}
+              <span className="speed-title-number">
+                x{(10 / Math.abs(speed)).toFixed(1)}
+              </span>
+            </div>
+            <input
+              className="speed-slider"
+              type="range"
+              min={-20}
+              max={-5}
+              value={speed}
+              step={1}
+              ref={speedInputRef}
+              onChange={(e) => {
+                setSpeed(e.target.value);
+              }}
+            />
           </div>
-          <input
-            className="speed-slider"
-            type="range"
-            min={5}
-            max={20}
-            value={speed}
-            step={1}
-            ref={speedInputRef}
-            onChange={(e) => {
-              setSpeed(e.target.value);
-            }}
-          />
+          <div className="statistic-wrapper">
+            <div id="numberVisitedNode">
+              Visited node(s): <span ref={number}>0</span>
+            </div>
+            <div id="shortedPathLength">
+              Shortest path length: <span ref={length}>0</span>
+            </div>
+          </div>
         </div>
       </div>
       <div className="grid">
