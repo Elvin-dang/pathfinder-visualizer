@@ -8,6 +8,11 @@ import {
   aStar,
   getNodesInShortestPath,
 } from "../Utility/Algorithm";
+import {
+  recursiveDivision,
+  chooseOrientation,
+  surroundingWall,
+} from "../Utility/MazeGenerationAlgorithm";
 import { Dropdown, Switch } from "../Components";
 import "./PathFinder.css";
 
@@ -33,6 +38,7 @@ const PathFinder = () => {
   const dropdownBtnRef = useRef(null);
   const clearBtnRef = useRef(null);
   const speedInputRef = useRef(null);
+  const mazeBtnRef = useRef(null);
   const number = useRef(null);
   const length = useRef(null);
 
@@ -146,6 +152,7 @@ const PathFinder = () => {
     finishNodeRef.current.disabled = value;
     visualizeBtnRef.current.disabled = value;
     dropdownBtnRef.current.disabled = value;
+    mazeBtnRef.current.disabled = value;
     clearBtnRef.current.disabled = value;
     speedInputRef.current.disabled = value;
   };
@@ -217,6 +224,44 @@ const PathFinder = () => {
     }
   };
 
+  const animationMaze = (wallNodes, newGrid) => {
+    for (let i = 0; i <= wallNodes.length; i++) {
+      if (i === wallNodes.length) {
+        setTimeout(() => {
+          setGrid(newGrid);
+          disable(false);
+        }, 2 * Math.abs(speed) * i + 1500);
+      } else {
+        setTimeout(() => {
+          document
+            .getElementById(`${wallNodes[i].row}-${wallNodes[i].col}`)
+            .classList.add("animation-trigger");
+        }, 2 * Math.abs(speed) * i);
+      }
+    }
+  };
+
+  const drawMaze = () => {
+    toggle("none");
+    disable(true);
+    resetStatistic();
+    const wallNodes = [];
+    const newGrid = createNewGrid();
+    setGrid(createNewGrid());
+    surroundingWall(newGrid, wallNodes);
+    recursiveDivision(
+      newGrid,
+      1,
+      1,
+      DEFAULT_COL - 2,
+      DEFAULT_ROW - 2,
+      chooseOrientation(DEFAULT_COL, DEFAULT_ROW),
+      wallNodes,
+      0,
+    );
+    animationMaze(wallNodes, newGrid);
+  };
+
   const visualize = () => {
     setGrid(grid.map((row) => row.slice()));
     resetStatistic();
@@ -245,6 +290,19 @@ const PathFinder = () => {
   return (
     <div>
       <div className="menu">
+        <button id="maze-btn" onClick={() => drawMaze()} ref={mazeBtnRef}>
+          Generate maze
+        </button>
+        <button
+          onClick={() => {
+            setGrid(createNewGrid());
+            resetStatistic();
+          }}
+          id="clear-btn"
+          ref={clearBtnRef}
+        >
+          Clear
+        </button>
         <div className="combo-btn">
           <button
             onClick={() => visualize()}
@@ -265,16 +323,6 @@ const PathFinder = () => {
             propRef={dropdownBtnRef}
           />
         </div>
-        <button
-          onClick={() => {
-            setGrid(createNewGrid());
-            resetStatistic();
-          }}
-          id="clear-btn"
-          ref={clearBtnRef}
-        >
-          Clear
-        </button>
         <div className="modifier">
           <div className="modifier-title">Click to set</div>
           <div className="switch-item-wrapper">
