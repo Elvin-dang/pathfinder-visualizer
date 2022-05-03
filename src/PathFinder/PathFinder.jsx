@@ -290,19 +290,21 @@ const PathFinder = () => {
   return (
     <div>
       <div className="menu">
-        <button id="maze-btn" onClick={() => drawMaze()} ref={mazeBtnRef}>
-          Generate maze
-        </button>
-        <button
-          onClick={() => {
-            setGrid(createNewGrid());
-            resetStatistic();
-          }}
-          id="clear-btn"
-          ref={clearBtnRef}
-        >
-          Clear
-        </button>
+        <div className="func-btn">
+          <button id="maze-btn" onClick={() => drawMaze()} ref={mazeBtnRef}>
+            Generate maze
+          </button>
+          <button
+            onClick={() => {
+              setGrid(createNewGrid());
+              resetStatistic();
+            }}
+            id="clear-btn"
+            ref={clearBtnRef}
+          >
+            Clear
+          </button>
+        </div>
         <div className="combo-btn">
           <button
             onClick={() => visualize()}

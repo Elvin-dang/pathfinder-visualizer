@@ -44,7 +44,7 @@
   touch-action: manipulation;
   vertical-align: middle;
   white-space: nowrap;
-  margin-right: 1px;
+  margin: 0 1px 0 10px;
 }
 
 #visualize-btn:focus:not(:focus-visible):not(.focus-visible) {
@@ -253,6 +253,7 @@
   touch-action: manipulation;
   vertical-align: baseline;
   width: auto;
+  margin-bottom: 10px;
 }
 
 #maze-btn:hover,
@@ -286,4 +287,10 @@
   box-shadow: rgba(0, 0, 0, 0.06) 0 2px 4px;
   color: rgba(0, 0, 0, 0.65);
   transform: translateY(0);
+}
+
+.func-btn {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
