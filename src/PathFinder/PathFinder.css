@@ -3,6 +3,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  height: 108px;
 }
 
 .menu button {
@@ -13,7 +14,8 @@
 .menu .combo-btn {
   display: flex;
   justify-content: flex-end;
-  min-width: 220px;
+  min-width: 230px;
+  height: 100%;
 }
 
 .menu .combo-btn button:first-child {
@@ -97,6 +99,7 @@
   touch-action: manipulation;
   vertical-align: baseline;
   width: auto;
+  height: 45%;
 }
 
 #clear-btn:hover,
@@ -201,6 +204,11 @@
   background-color: darkgreen;
 }
 
+.speed-wrapper {
+  padding: 3px;
+  border-bottom: 2px solid #d3d3d3;
+}
+
 .speed-wrapper .speed-title .speed-title-number {
   font-weight: bold;
   display: inline-block;
@@ -214,15 +222,16 @@
 .speed-statistic-wrapper {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: space-around;
   border: 2px solid #d3d3d3;
   border-radius: 10px;
-  padding: 3px;
   min-width: 190px;
+  height: 100%;
 }
 
 .speed-statistic-wrapper .statistic-wrapper {
   text-align: start;
+  padding: 3px;
 }
 
 .speed-statistic-wrapper .statistic-wrapper span{
@@ -253,7 +262,7 @@
   touch-action: manipulation;
   vertical-align: baseline;
   width: auto;
-  margin-bottom: 10px;
+  height: 45%;
 }
 
 #maze-btn:hover,
@@ -293,4 +302,5 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  height: 100%;
 }

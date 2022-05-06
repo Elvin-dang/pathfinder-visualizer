@@ -44,26 +44,18 @@ export default function divide(
   wallNodes,
   step,
 ) {
-  // if (step === 5) return;
   if (width < 3 || height < 3) return;
   const horizontal = orientation === HORIZONTAL;
-  // console.log(horizontal ? "horizontal" : "vertical");
   const length = horizontal ? width : height;
   let wc, wr;
-  // console.log(`check wr and wc`);
   let checkLoop = 0;
   do {
     wc = col + (horizontal ? 0 : getRandomInt2(1, width - 2));
     wr = row + (horizontal ? getRandomInt2(1, height - 2) : 0);
-    // console.log(`wr,wc ${wr},${wc}`);
     if (checkLoop > 60) {
       return;
     }
     checkLoop++;
-    // if (horizontal) console.log(grid[wr][wc + length].isWall);
-    // else console.log(grid[wr + length][wc].isWall);
-    // if (horizontal) console.log(grid[wr][wc - 1].isWall);
-    // else console.log(grid[wr - 1][wc].isWall);
   } while (
     (horizontal
       ? !grid[wr][wc + length].isWall
@@ -74,9 +66,7 @@ export default function divide(
   const pr = horizontal ? wr : wr + getRandomInt(height);
   const dc = horizontal ? 1 : 0;
   const dr = horizontal ? 0 : 1;
-  // console.log(`length ${length} from ${wr},${wc}`);
   for (let i = 0; i < length; i++) {
-    // console.log(`draw ${i} ${wr},${wc}`);
     if (
       !(wc === pc && wr === pr) &&
       !grid[wr][wc].isStartNode &&
@@ -88,7 +78,6 @@ export default function divide(
     wc += dc;
     wr += dr;
   }
-  // console.log(`-------------- to ${wr - dr},${wc - dc}, hole in ${pr},${pc}`);
   let nc = col;
   let nr = row;
   let w = horizontal ? width : wc - col;
