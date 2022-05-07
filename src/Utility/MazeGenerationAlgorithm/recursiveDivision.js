@@ -22,10 +22,12 @@ export function surroundingWall(grid, wallNodes) {
   for (const row of grid) {
     for (const node of row) {
       if (
-        node.row === 0 ||
-        node.col === 0 ||
-        node.row === grid.length - 1 ||
-        node.col === row.length - 1
+        (node.row === 0 ||
+          node.col === 0 ||
+          node.row === grid.length - 1 ||
+          node.col === row.length - 1) &&
+        !node.isStartNode &&
+        !node.isFinishNode
       ) {
         node.isWall = true;
         wallNodes.push({ row: node.row, col: node.col });
